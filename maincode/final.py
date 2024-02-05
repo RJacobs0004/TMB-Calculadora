@@ -78,10 +78,12 @@ def personalizar_entradas():
     entry_idade.config(bg="#a9a9a9", bd=3, relief="solid", font=("Arial", 12))
 
 def ganhar_tmb():
+    global maispeso
     maispeso = tmb * 0.5
     if maispeso > 1:
         maispeso_var.set(f"Você precisa aumentar {maispeso:.2f} calorias por dia.")
     else:
+        maispeso_var.set (f"Calcule seu TMB primeiro")
         return maispeso
     return maispeso
 def manter_tmb():
@@ -89,6 +91,7 @@ def manter_tmb():
     if maispeso > 1:
         maispeso_var.set(f"Você precisa manter {maispeso:.2f} calorias por dia.")
     else:
+        maispeso_var.set (f"Calcule seu TMB primeiro")
         return maispeso
     return maispeso
 
@@ -97,6 +100,7 @@ def perder_tmb ():
     if maispeso <=-1:
         maispeso_var.set(f"Você precisa diminuir {maispeso:.2f} calorias por dia.")
     else:
+        maispeso_var.set (f"Calcule seu TMB primeiro")
         return maispeso
     return maispeso
 
@@ -109,12 +113,14 @@ def exercios_leve ():
         return maispeso
 
 def exercicio_medio ():
+    global exercicio
     exercicio = tmb * 0.4
     if exercicio >= 1:
         exercicio_var.set (f"você gasta {exercicio:.1f} amais do que seu tmb todos os dias ")
     else:
         exercicio_var.set ("Calcule seu TMB primeiro")
         return exercicio
+    
 
 def exercicio_pesado ():
     exercicio = tmb * 0.8
@@ -123,6 +129,8 @@ def exercicio_pesado ():
     else:
         exercicio_var.set ("Calcule seu TMB primeiro")
         return exercicio
+maispeso =0 
+exercicio = 0  
  
 
 janela = Tk()
@@ -132,7 +140,7 @@ logo_inicial = PhotoImage(file=r"C:\Users\Rober\Desktop\CODE\imagens\download (1
 
 janela.iconphoto(False, logo_inicial)
 janela.title('TMB e Calculo de Nutrientes')
-janela.geometry('500x500')
+janela.geometry('420x330')
 var_sexo = IntVar()
 var_proposito = IntVar()
 var_proposito_calorias = IntVar ()
@@ -144,7 +152,8 @@ label_altura = Label(janela, text="Digite sua altura em cm:")
 label_idade = Label(janela, text="Digite sua idade:")
 label_sexo = Label(janela, text="Selecione seu :")
 label_proposito = Label(janela, text="Calcule seus macro:")
-label_add = Label (janela,text = "selecione se deseja perder ganhar ou manter as Calorias")
+label_calorias = Label (janela, text = "Objetivo",font=('Arial', 10, 'bold'))
+label_rotina = Label (janela, text="ROTINA",font=('Arial', 10, 'bold'))
 
 entry_peso = Entry(janela)
 entry_altura = Entry(janela)
@@ -158,17 +167,19 @@ radio_calculo = Radiobutton(janela, text="ganhar", variable=var_proposito, value
 
 
 button_calcular_tmb = Button(janela, text="Calcular TMB", command=calcular_tmb)
-button_calcular_necessidades = Button(janela, text="Calcular Necessidades",
+button_calcular_necessidades = Button(janela, text="Calcular Necessidades",justify="left",
                                        command=lambda: calcular_necessidades(var_proposito.get(), 
                                                                              float(entry_peso.get())))
 
-button_maispeso = Button(janela, text="Mais caloria",command=ganhar_tmb)
-button_manterpeso = Button(janela, text="Manter calorias", command=manter_tmb)
-buttons_perderpeso = Button(janela, text="Diminuir calorias",  command=perder_tmb)
+button_maispeso = Button(janela, text="Mais (kcal)",command=ganhar_tmb,width=11)
+button_manterpeso = Button(janela, text="Manter (kcal)", command=manter_tmb, width=11)
+buttons_perderpeso = Button(janela, text="Diminuir (kcal)",  command=perder_tmb, width=11)
 
-button_exercicio_leve = Button (janela, text= "Treino Leve",command= exercios_leve )
-button_exercicio_medio = Button (janela, text= "Treino medio", command = exercicio_medio)
-button_exercicio_pesado = Button (janela, text= "Treino pesado", command = exercicio_pesado)
+button_exercicio_leve = Button (janela, text= "rotina leve",command= exercios_leve,width=11  )
+button_exercicio_medio = Button (janela, text= "rotina media", command = exercicio_medio, width=11)
+button_exercicio_pesado = Button (janela, text= "rotina pesada", command = exercicio_pesado, width=11)
+
+#button_resultadofinal = Button (janela, text= "calcule seu resultado final", command = resultado_final, width=11)
 
 resultado_var = StringVar()
 resultado_proteina = StringVar()
@@ -176,6 +187,7 @@ resultado_carbo = StringVar()
 resultado_gordura = StringVar()
 maispeso_var = StringVar()
 exercicio_var = StringVar ()
+resultadofinal_var = IntVar()
 
 label_resultado_tmb = Label(janela, textvariable=resultado_var)
 label_resultado_proteina = Label(janela, textvariable=resultado_proteina)
@@ -183,6 +195,8 @@ label_resultado_carbo = Label(janela, textvariable=resultado_carbo)
 label_resultado_gordura = Label(janela, textvariable=resultado_gordura)
 label_resultado_mais_peso = Label(janela, textvariable=maispeso_var)
 label_ganharpeso = Label (janela,textvariable=button_maispeso)
+##label_resultadofinal = Label (janela,textvariable=resultadofinal_var)
+
 
 label_exercicios = Label (janela,textvariable=exercicio_var)
 
@@ -202,29 +216,35 @@ radio_homem.grid(row=3, column=1, sticky="E")
 label_proposito.grid(row=4, column=0, sticky="E")
 
 #MACRO NUTRIENTES
-radio_perder.grid(row=4, column=1, sticky="W")
-radio_manter.grid(row=4, column=2)
-radio_calculo.grid(row=4, column=3, sticky="E")
+radio_perder.grid(row=4, column=1, sticky="W",columnspan=10)
+radio_manter.grid(row=4, column=1,pady=1,columnspan=2)
+radio_calculo.grid(row=4, column=2, columnspan=1)
 #---------------------------
 #ROTINA DE EXERCECICIOS
-button_exercicio_leve.grid (row=0,column=6,columnspan=2,padx=0)
-button_exercicio_medio.grid (row=1,column=6,columnspan=2,padx=0)
-button_exercicio_pesado.grid (row=2,column=6,columnspan=2,padx=0)
-#---------------------------
+# ROTINA DE EXERCÍCIOS
+button_exercicio_leve.grid(row=1, column=8, columnspan=2, sticky='E', padx=(0, 50))
+button_exercicio_medio.grid(row=2, column=8, columnspan=2, sticky='E', padx=(0, 50))
+button_exercicio_pesado.grid(row=3, column=8, columnspan=2, sticky='E', padx=(0, 50))
+# ---------------------------
 
-button_calcular_tmb.grid(row=6, column=0, columnspan=2)
-button_calcular_necessidades.grid(row=7, column=0, columnspan=2)
+button_calcular_tmb.grid(row=6, column=0, columnspan=2, padx=(50, 0))
+button_calcular_necessidades.grid(row=7, column=0, columnspan=2, padx=(50, 0))
+# MANTER/PERDER = PESO
+button_maispeso.grid(row=6, column=8, columnspan=2, sticky='E', padx=(0, 50))
+button_manterpeso.grid(row=7, column=8, columnspan=2, sticky='E', padx=(0, 50))
+buttons_perderpeso.grid(row=8, column=8, columnspan=2, sticky='E', padx=(0, 50))
+# -------------------------
+#button_resultadofinal.grid (row=10, column=8, columnspan=2, sticky='E', padx=(0, 50))
+#-------------------------
 
-button_maispeso.grid(row=0, column=2, columnspan=2, padx=0)
-button_manterpeso.grid(row=1, column=2, columnspan=2, padx=0)
-buttons_perderpeso.grid(row=2, column=2, columnspan=2, padx=0)
-
-label_add.grid (row=5,column=0,columnspan=2)
-label_resultado_tmb.grid(row=8, column=1, columnspan=5)
+#label_resultadofinal.grid (row=14, column=0,columnspan=5)
+label_resultado_tmb.grid(row=8, column=0, columnspan=5) #Button Resultado TMB
 label_resultado_proteina.grid(row=9, column=0,columnspan=2)
 label_resultado_carbo.grid(row=10, column=0,columnspan=2)
 label_resultado_gordura.grid(row=11, column=0,columnspan=2)
 label_resultado_mais_peso.grid (row=12, column=0, columnspan=5)
 label_exercicios.grid (row=13, column=0,columnspan=5)
+label_rotina.grid (row=0, column=8, columnspan=2, sticky='E', padx=(0, 70))
+label_calorias.grid (row=5, column=8, columnspan=2, sticky='E', padx=(0, 70))
 
 janela.mainloop()
